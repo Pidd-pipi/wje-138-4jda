@@ -24,8 +24,8 @@ class Driver(models.Model):
 
 class DispatchOrder(models.Model):
     order_no = models.CharField(max_length=40)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, null=True)
-    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, null=True, related_name='dispatch_orders')
+    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, related_name='dispatch_orders')
     origin = models.CharField(max_length=120)
     destination = models.CharField(max_length=120)
     plan_depart_at = models.DateTimeField(null=True)
@@ -40,18 +40,24 @@ class DispatchOrder(models.Model):
     note = models.TextField(blank=True)
 
 class MaintenanceRecord(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='maintenance_records')
     maintenance_type = models.CharField(max_length=24)
     items = models.JSONField(default=list)
     cost = models.FloatField(default=0)
-    vendor = models.CharField(max_length=120)
+    vendor = models.CharField(max_length=120, blank=True, default='')
     date = models.DateField(null=True)
+    mileage = models.IntegerField(default=0)
     next_mileage = models.IntegerField(default=0)
     next_date = models.DateField(null=True)
-    status = models.CharField(max_length=24)
+    # Scheduled=已预约待施工（系统按里程/日期生成或人工创建），InProgress=施工中，Completed=已完成
+    status = models.CharField(max_length=24, default='Scheduled')
+    # Auto=系统按保养规则生成的待处理预约，Manual=人工登记
+    source = models.CharField(max_length=16, default='Manual')
+    completed_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class FuelRecord(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='fuel_records')
     date = models.DateField(null=True)
     liters = models.FloatField(default=0)
     unit_price = models.FloatField(default=0)

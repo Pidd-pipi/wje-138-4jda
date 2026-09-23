@@ -46,6 +46,8 @@ class MaintenanceRecord(models.Model):
     cost = models.FloatField(default=0)
     vendor = models.CharField(max_length=120)
     date = models.DateField(null=True)
+    # 本次保养完成时车辆的里程读数，用于与当前里程比较判断是否到期
+    mileage = models.IntegerField(default=0)
     next_mileage = models.IntegerField(default=0)
     next_date = models.DateField(null=True)
     status = models.CharField(max_length=24)

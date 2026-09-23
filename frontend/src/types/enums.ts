@@ -3,3 +3,9 @@ export enum DispatchStatus { Pending = 'Pending', Assigned = 'Assigned', InProgr
 export enum MaintenanceType { Routine = 'Routine', Repair = 'Repair', Emergency = 'Emergency', Inspection = 'Inspection' }
 export enum DriverStatus { Available = 'Available', OnTrip = 'OnTrip', Leave = 'Leave', Suspended = 'Suspended' }
 export enum PaymentMethod { Cash = 'Cash', Card = 'Card', Company = 'Company' }
+
+// 维保记录筛选分段：Due=到期（占用车辆） / Pending=待处理预约 / Completed=已完成
+export enum MaintenanceStage { Due = 'Due', Pending = 'Pending', Completed = 'Completed' }
+
+// 保养到期原因码
+export enum MaintenanceDueReason { Mileage = 'mileage', Date = 'date' }

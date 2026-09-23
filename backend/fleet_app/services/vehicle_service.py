@@ -1,5 +1,32 @@
+"""车辆业务：车辆列表附带保养占用状态，供车辆卡片与调度中心判断排班。"""
+from fleet_app.services import fleet_data
+from fleet_app.services.maintenance_service import block_map
+
+
+def _iso(value):
+    return value.isoformat() if value else ''
+
+
+def _serialize_vehicle(vehicle, blocks):
+    block = blocks.get(vehicle['id'], {})
+    return {
+        'id': vehicle['id'],
+        'plateNo': vehicle['plate_no'],
+        'type': vehicle['type'],
+        'brandModel': vehicle['brand_model'],
+        'purchaseDate': _iso(vehicle['purchase_date']),
+        'insuranceExpireDate': _iso(vehicle['insurance_expire_date']),
+        'inspectionExpireDate': _iso(vehicle['inspection_expire_date']),
+        'status': vehicle['status'],
+        'mileage': vehicle['mileage'],
+        'tankCapacity': vehicle['tank_capacity'],
+        'fuelConsumption': vehicle['fuel_consumption'],
+        'maintenanceBlocked': block.get('blocked', False),
+        'maintenanceReason': block.get('reason', ''),
+        'maintenanceReasonCodes': block.get('reasonCodes', []),
+    }
+
+
 def list_vehicles():
-    return [
-        {'id': 1, 'plateNo': '沪A-7821', 'type': '冷链车', 'brandModel': '东风天锦 KR', 'purchaseDate': '2023-03-12', 'insuranceExpireDate': '2026-09-30', 'inspectionExpireDate': '2026-11-20', 'status': 'Available', 'mileage': 88210, 'tankCapacity': 380, 'fuelConsumption': 24.6},
-        {'id': 2, 'plateNo': '苏E-5520', 'type': '重卡', 'brandModel': '解放 J6P', 'purchaseDate': '2021-08-06', 'insuranceExpireDate': '2026-07-15', 'inspectionExpireDate': '2026-08-22', 'status': 'OnTrip', 'mileage': 210430, 'tankCapacity': 520, 'fuelConsumption': 31.2},
-    ]
+    blocks = block_map()
+    return [_serialize_vehicle(vehicle, blocks) for vehicle in fleet_data.VEHICLES.values()]
